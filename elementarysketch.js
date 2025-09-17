@@ -1,6 +1,6 @@
   /* ===================== Config ===================== */
     const X_MIN=-10,X_MAX=10,Y_MIN=-10,Y_MAX=10,SAMPLES=600;
-    const SHIFT_STEP_X=0.15, SHIFT_STEP_Y=0.15, SCALE_STEP=1.04, HOLD_STEP_MS=55, ACC_THRESHOLD=0.99;
+    const SHIFT_STEP_X=0.2, SHIFT_STEP_Y=0.2, SCALE_STEP=1.04, HOLD_STEP_MS=55, ACC_THRESHOLD=0.99;
 
     /* Target generator limits (ops simulate the same user actions) */
     const GEN_MIN_OPS = 5;
@@ -28,7 +28,7 @@
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
     const snapToStep=(v,step)=>Math.round(v/step)*step;
     const approx=(v,t=1e-12)=>Math.abs(v)<t;
-    function fmt(n,d=4){ let s=(approx(n)?0:+n.toFixed(d)).toString(); s=s.replace(/(\.\d*?[1-9])0+$/,'$1').replace(/\.0+$/,''); return s.replace(/-/g,'−');}
+    function fmt(n,d=1){ let s=(approx(n)?0:+n.toFixed(d)).toString(); s=s.replace(/(\.\d*?[1-9])0+$/,'$1').replace(/\.0+$/,''); return s.replace(/-/g,'−');}
     const plusMinus=(n)=> (n>=0?" + ":" − ")+fmt(Math.abs(n));
     const deepClone=(o)=>JSON.parse(JSON.stringify(o));
 
@@ -150,16 +150,16 @@
             const r = Math.random();
 
             if(r < 0.14){                // move h
-                const dir = Math.random()<0.5 ? -1 : 1;
+                const dir = Math.random()<0.5 ? -randInt(1,20) : randInt(1,20);
                 p.h = snapToStep(p.h + dir*SHIFT_STEP_X, SHIFT_STEP_X);
             }else if(r < 0.28){          // move d (Kout)
-                const dir = Math.random()<0.5 ? -1 : 1;
+                const dir = Math.random()<0.5 ? -randInt(1,20) : randInt(1,20);
                 p.Kout = snapToStep(p.Kout + dir*SHIFT_STEP_Y, SHIFT_STEP_Y);
             }else if(r < 0.42){          // scale a
-                const dir = Math.random()<0.5 ? -1 : 1;
+                const dir = Math.random()<0.5 ? -randInt(1,20) : randInt(1,20);
                 p.a = stepScaleSigned(p.a, dir);
             }else if(r < 0.56){          // scale b
-                const dir = Math.random()<0.5 ? -1 : 1;
+                const dir = Math.random()<0.5 ? -randInt(1,20) : randInt(1,20);
                 p.b = stepScaleSigned(p.b, dir);
             }else if(r < 0.68){          // toggle A (wrap current)
                 if(!p.wrapOrder.includes('abs')){ p.dAbs += p.Kout; p.Kout=0; p.wrapOrder.push('abs'); }
@@ -327,7 +327,7 @@
         acc=computeAccuracy(); brightness=map(acc,0,1,0,90); background(brightness);
         processHeld(); drawAxesAndTicks();
 
-        drawFunction(paramsTarget,[180,180,180,170],2);                 // target
+        drawFunction(paramsTarget,[255, 80, 0, 170],2);                 // target
         const glow=map(acc,0,1,100,255); drawFunction(paramsPlayer,[0,255,255,glow],3); // player
 
         document.getElementById('accuracy').textContent=`Acc: ${(acc*100).toFixed(2)}%`;
